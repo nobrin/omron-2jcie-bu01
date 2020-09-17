@@ -6,39 +6,47 @@ Python 3.6以上で動作します。クラスはUSBシリアル通信およびB
 ## Example
 ### シリアル通信で測定値を取得する
 
-    from envsensor.serial import Omron2JCIE_BU01_Serial
-    sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
-    sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
-    devinfo = sensor.info()
-    data = sensor.latest_data_long()
+```python
+from envsensor.serial import Omron2JCIE_BU01_Serial
+sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
+sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
+devinfo = sensor.info()
+data = sensor.latest_data_long()
+```
 
 ### BLE通信で測定値を取得する
 
-    # Read latest data with connection
-    from envsensor.serial import Omron2JCIE_BU01_BLE
-    sensor = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
-    data1 = sensor.latest_sensing_data()
-    data2 = sensor.latest_calculation_data()
+```python
+# Read latest data with connection
+from envsensor.serial import Omron2JCIE_BU01_BLE
+sensor = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
+data1 = sensor.latest_sensing_data()
+data2 = sensor.latest_calculation_data()
+```
 
-    # Read latest data by scan
-    def on_scan(data):
-        print("SCAN", data)
-    
-    # Advertising mode: 0x01 (Passive)
-    sensor.scan(on_scan, scantime=3)
-    
-    # Advertising mode: 0x03 (Active)
-    sensor.scan(on_scan, scantime=3, active=True)
+```python
+# Read latest data by scan
+def on_scan(data):
+    print("SCAN", data)
 
-    # Notify sensing data
-    def on_notify(sender, tpl):
-        print(f"{sender} {tpl}")
-    
-    sensor.start_notify(0x5012, on_notify)
-    sensor.start_notify(0x5013, on_notify)
-    sensor.sleep(5)
-    sensor.stop_notify(0x5012)
-    sensor.stop_notify(0x5013)
+# Advertising mode: 0x01 (Passive)
+sensor.scan(on_scan, scantime=3)
+
+# Advertising mode: 0x03 (Active)
+sensor.scan(on_scan, scantime=3, active=True)
+```
+
+```python
+# Notify sensing data
+def on_notify(sender, tpl):
+    print(f"{sender} {tpl}")
+
+sensor.start_notify(0x5012, on_notify)
+sensor.start_notify(0x5013, on_notify)
+sensor.sleep(5)
+sensor.stop_notify(0x5012)
+sensor.stop_notify(0x5013)
+```
 
 ## ファイル
 - envsensor/ -- モジュール本体ディレクトリ
@@ -175,7 +183,7 @@ BLE通信用クラス。
     - 0x5013: Latest calculation data
 - start_notify(_characteristic_uuid_, _callback_):
   - Activate notifications on a characteristic
-	```
+	```python
     	def callback(sender, tpl):
         	print(f"{sender} {tpl}")
         sensor.start_notify(0x5012, callback)
