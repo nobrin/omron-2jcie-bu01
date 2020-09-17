@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+import sys
+sys.path.insert(0, "../lib-ext")
+sys.path.insert(0, "..")
+
+import unittest
+from envsensor.ble import Omron2JCIE_BU01_BLE
+
+class BLEScanTestCase(unittest.TestCase):
+    ADDRESS = None
+
+    @classmethod
+    def setUpClass(cls):
+        sensor = Omron2JCIE_BU01_BLE()
+        cls.ADDRESS = sensor.address
+        print(f"Target HW address: {cls.ADDRESS}")
+
+    def setUp(self):
+        self.sensor = Omron2JCIE_BU01_BLE(self.ADDRESS)
+
+    def tearDown(self): pass
+
+    def test_scan_passive(self):
+        # Passive Scan: Advertise mode 0x01
+        def on_scan(tpl):
+            print(tpl)
+            self.assertEqual(tpl.__class__.__name__, "scan_passive")
+
+        # Advertise mode 0x01
+        self.sensor.advertise_setting(mode=0x01)
+        self.sensor.disconnect()
+        self.sensor.scan(on_scan, 5)
+
+    def test_scan_active(self):
+        # Active Scan: Advertise mode 0x03
+        def on_scan(tpl):
+            print(tpl)
+            self.assertEqual(tpl.__class__.__name__, "scan_active")
+
+        # Advertise mode 0x03
+        self.sensor.advertise_setting(mode=0x03)
+        self.sensor.disconnect()
+        self.sensor.scan(on_scan, 5, active=True)
+
+if __name__ == "__main__":
+    unittest.main()
