@@ -10,11 +10,13 @@ This module depends on pySerial(serial communication) and Bleak(BLE).
 ## Example
 ### Obtain sensing data _via_ serial communication
 
-    from envsensor.serial import Omron2JCIE_BU01_Serial
-    sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
-    sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
-    devinfo = sensor.info()
-    data = sensor.latest_data_long()
+```python
+from envsensor.serial import Omron2JCIE_BU01_Serial
+sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
+sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
+devinfo = sensor.info()
+data = sensor.latest_data_long()
+```
 
 ### Obtain sensing data _via_ BLE communication
 
@@ -148,6 +150,6 @@ Do not instantiate it directly, but inherit it.
 - sleep(seconds)
   - Call asyncio.sleep()
 
-## 参考サイト
+## References
 - OMRON 2JCIE-BU Environment Sensor USB型
   - https://www.components.omron.com/product-detail?partId=73065
