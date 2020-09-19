@@ -2,7 +2,7 @@
 # Module:  envsensor.ble
 import asyncio
 import struct
-import traceback
+import traceback, platform
 from warnings import warn
 from bleak import BleakClient, BleakScanner, discover
 from . import Omron2JCIE_BU01_Base, DataParser
@@ -38,11 +38,11 @@ class Omron2JCIE_BU01_BLE(Omron2JCIE_BU01_Base):
         class _BleakClientWrapper(object):
             # Wrapper class for async coroutine of BleakClient
             def __init__(self, address, loop):
-                self.client = BleakClient(address)
+                self._bleak_client = BleakClient(address)
                 self.loop = loop
 
             def __getattr__(self, name):
-                func = getattr(self.client, name)
+                func = getattr(self._bleak_client, name)
                 def _wrapper(*args, **kw):
                     return self.loop.run_until_complete(func(*args, **kw))
                 return _wrapper
@@ -70,34 +70,66 @@ class Omron2JCIE_BU01_BLE(Omron2JCIE_BU01_Base):
 
             data = ev.metadata["manufacturer_data"].get(725)
             if not data: raise NoManufacturerData()
-            datatype, seqno = data[0], data[1]
 
-            if datatype in (0x03, 0x04):
-                # For active scan
-                if len(data) == 19 and seqno not in self.seq:
-                    # Parse ADV_IND
-                    self.seq[seqno] = self.parser.parse_adv(data)
-                    raise NotTarget()   # Will proceed ADV_RSP
-
-                if len(data) == 27 and seqno in self.seq:
-                    # Parse ADV_RSP
-                    # Add fields for ADV_IND
-                    a = self.parser.parse_adv(data)
-                    dct = self.seq.pop(seqno)._asdict()
-                    dct.update(a._asdict())
-                    return self.parser.get_adv_namedtuple(datatype)(**dct)
-
-                raise NotTarget()
-
-            # For passive scan
-            if distinct and seqno == self.last_seqno: raise NotTarget()
-            self.last_seqno = seqno
-            return self.parser.parse_adv(data)
+            return self._parse_advertisement(data, distinct)
         except SkipData:
             # This data will not pass the callback
             raise
         except Exception as e:
             traceback.print_exc()
+
+    def _detection_callback_Linux(self, scanner, msg, callback, distinct):
+        # Callback for detection on Linux
+        # - scanner -- BleakScanner object
+        # - msg -- txdbus.message.SignalMessage
+        #
+        # NOTE: Bluez may not return all every received messages.
+        for path, dev in scanner._devices.items():
+            # Check address of advertised device
+            target_path = None
+            if dev["Address"] == self.address:
+                target_path = path
+                break
+
+        # Received message does not match address
+        if not target_path or msg.path != target_path: return
+
+        if msg.member == "PropertiesChanged":
+            iface, changed, invalidated = msg.body
+            data = changed.get("ManufacturerData", {}).get(725)
+            if data is None: return
+
+            data = struct.pack(f"{len(data)}B", *data)
+            try: res = self._parse_advertisement(data, distinct)
+            except SkipData: pass
+            except Exception as e: traceback.print_ext()
+            else:
+                try: callback(res)
+                except Exception as e: traceback.print_exc()
+
+    def _parse_advertisement(self, data, distinct):
+        datatype, seqno = data[0], data[1]
+        if datatype in (0x03, 0x04):
+            # For active scan
+            if len(data) == 19 and seqno not in self.seq:
+                # Parse ADV_IND
+                if distinct and seqno == self.last_seqno: raise NotTarget()
+                self.last_seqno = seqno
+                self.seq[seqno] = self.parser.parse_adv(data)
+                raise NotTarget()   # Will proceed ADV_RSP
+
+            if len(data) == 27 and seqno in self.seq:
+                # Parse ADV_RSP
+                # Add fields to ADV_IND
+                a = self.parser.parse_adv(data)
+                dct = self.seq.pop(seqno)._asdict()
+                dct.update(a._asdict())
+                return self.parser.get_adv_namedtuple(datatype)(**dct)
+            raise NotTarget()
+        # For passive scan
+        if distinct and seqno == self.last_seqno: raise NotTarget()
+        self.last_seqno = seqno
+        return self.parser.parse_adv(data)
 
     def scan(self, callback, scantime=10, active=False, distinct=True):
         # Scan advertising packet
@@ -114,11 +146,27 @@ class Omron2JCIE_BU01_BLE(Omron2JCIE_BU01_Base):
                     try: callback(res)
                     except Exception as e: traceback.print_exc()
 
+            def _wrapped_Linux(scanner):
+                def _wrapped(msg):
+                    self._detection_callback_Linux(scanner, msg, callback, distinct)
+                return _wrapped
+
             # Scan rsp can be obtained with active scan
             if active: kw = {}                          # Active scan (for 0x03, 0x04)
             else: kw = {"scanning_mode": "passive"}     # Passive scan(default)
             async with BleakScanner(loop=loop, **kw) as scanner:
-                scanner.register_detection_callback(_wrapped)
+                if platform.system() == "Linux":
+                    # NOTE: Bluez 5.50 may not return all every received messages.
+                    # Data seems to be detected every 11 seconds.
+                    # In mode 0x03, ADV_IND and ADV_RSP are not always aligned.
+                    # So, it seems that complete data can only be obtained once in a white.
+                    # Ex. The acquisition intervals was between 44 to 374 seconds.
+                    # It seems random...
+                    scanner.register_detection_callback(_wrapped_Linux(scanner))
+                else:
+                    # On Windows, data can be detected at intervals of 1 second or less.
+                    # And complete data will be obtained about every 1 second.
+                    scanner.register_detection_callback(_wrapped)
                 await asyncio.sleep(scantime)
 
         if self.is_connected():
@@ -135,12 +183,19 @@ class Omron2JCIE_BU01_BLE(Omron2JCIE_BU01_Base):
 
     def is_connected(self):
         # Is connected
+        if platform.system() == "Linux":
+            # In Bleak 0.7.1 on Linux, client.is_connected() is called before connect(),
+            # None value of client._bus causes raising AttributeError.
+            # Checking BleakClientBlueZDBus._bus will avoids the exception.
+            if self.client._bleak_client._bus is None: return False
+
         return self.client.is_connected()
 
     def get(self, chara, data=b"", name=None):
         # If not connected, connect first
         if not self.is_connected(): self.connect()
         if data:
+            if isinstance(data, bytes): data = bytearray(data)
             return self.client.write_gatt_char(self.uuid(chara), data)
         res = self.client.read_gatt_char(self.uuid(chara))
         return self.parser.parse(struct.pack("<H", chara) + res, name)

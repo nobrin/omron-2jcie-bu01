@@ -5,6 +5,7 @@ sys.path.insert(0, "..")
 
 from envsensor.ble import Omron2JCIE_BU01_BLE
 
+#s = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
 s = Omron2JCIE_BU01_BLE()
 
 # Notify

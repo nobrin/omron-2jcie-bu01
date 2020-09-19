@@ -137,8 +137,8 @@ class DataParser(object):
     }
 
     TPLNAME = {
-        0x01:   "scan_passive",
-        0x03:   "scan_active",
+#        0x01:   "scan_passive",
+#        0x03:   "scan_active",
         0x5012: "latest_sensing_data",
         0x5013: "latest_calculation_data",
         0x5021: "latest_data_long",

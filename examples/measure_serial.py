@@ -13,8 +13,8 @@ CurrentTZ = type(time.tzname[0], (tzinfo,), {
     "dst": lambda self, dt: timedelta(seconds=time.timezone - time.altzone),
 })()
 
-#s = Omron2JCIE_BU01_Serial("/dev/ttyUSB0")
-s = Omron2JCIE_BU01_Serial("COM3")
+s = Omron2JCIE_BU01_Serial("/dev/ttyUSB0")
+#s = Omron2JCIE_BU01_Serial("COM3")
 dev = s.info()
 info = s.latest_data_long()
 dt = datetime.now(CurrentTZ)
