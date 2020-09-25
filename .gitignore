@@ -1,2 +1,5 @@
 __pycache__/
 lib-ext/
+build/
+dist/
+omron_2jcie_bu01.egg-info/

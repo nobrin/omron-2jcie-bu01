@@ -1,0 +1,6 @@
+include *.md
+include LICENSE
+include MANIFEST.in
+include test/test_*.py
+include examples/*.py
+
