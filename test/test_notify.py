@@ -4,19 +4,19 @@ sys.path.insert(0, "../lib-ext")
 sys.path.insert(0, "..")
 
 import unittest
-from omron_2jcie_bu01.ble import Omron2JCIE_BU01_BLE
+from omron_2jcie_bu01 import Omron2JCIE_BU01
 
 class BLENotificationTestCase(unittest.TestCase):
     ADDRESS = None
 
     @classmethod
     def setUpClass(cls):
-        sensor = Omron2JCIE_BU01_BLE()
+        sensor = Omron2JCIE_BU01.ble()
         cls.ADDRESS = sensor.address
         print(f"Target HW address: {cls.ADDRESS}")
 
     def setUp(self):
-        self.sensor = Omron2JCIE_BU01_BLE(self.ADDRESS)
+        self.sensor = Omron2JCIE_BU01.ble(self.ADDRESS)
 
     def tearDown(self): pass
 

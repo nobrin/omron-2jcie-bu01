@@ -11,9 +11,9 @@ This module depends on pySerial(serial communication) and Bleak(BLE).
 ### Obtain sensing data _via_ serial communication
 
 ```python
-from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
-sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
-sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
+from omron_2jcie_bu01 import Omron2JCIE_BU01
+sensor = Omron2JCIE_BU01.serial("/dev/ttyUSB0") # Linux
+sensor = Omron2JCIE_BU01.serial("COM5")         # Windows
 devinfo = sensor.info()
 data = sensor.latest_data_long()
 ```
@@ -22,8 +22,8 @@ data = sensor.latest_data_long()
 
 ```python
 # Read latest data with connection
-from omron_2jcie_bu01.serial import Omron2JCIE_BU01_BLE
-sensor = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
+from omron_2jcie_bu01 import Omron2JCIE_BU01
+sensor = Omron2JCIE_BU01.ble("AA:BB:CC:DD:EE:FF")
 data1 = sensor.latest_sensing_data()
 data2 = sensor.latest_calculation_data()
 ```
@@ -75,7 +75,13 @@ sensor.stop_notify(0x5013)
 ## Module
 ### _class_ omron_2jcie_bu01.DataParser()
 
-### _class_ omron_2jcie_bu01.Omron2JCIE_BU01_Base()
+### _class_ omron_2jcie_bu01.Omron2JCIE_BU01()
+Base class for Omron2JCIE_BU01_Serial and Omron2JCIE_BU01_BLE.
+
+- serial(_port_)
+  - Returns Omron2JCIE_BU01_Serial instance.
+- ble(_hardware_address=None_)
+  - Returns Omron2JCIE_BU01_BLE instance.
 
 ### _class_ omron_2jcie_bu01.serial.Omron2JCIE_BU01_Serial(_port_)
 Class for serial communication.
@@ -86,7 +92,7 @@ Class for BLE communication.
 Hardware address is optional. If ommited, the address will be specified by discover().
 The discover() takes time, specifying address are recommended.
 
-### Omron2JCIE_BU01_Base object
+### Omron2JCIE_BU01 object
 Do not instantiate it directly, but inherit it.
 
 - get(_address_, _data=b""_, _name=None_)

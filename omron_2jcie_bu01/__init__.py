@@ -9,16 +9,16 @@ communication) and Bleak(BLE).
 Example::
 
     # Obtain sensing data via serial communication
-    from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
-    sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
-    sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
+    from omron_2jcie_bu01 import Omron2JCIE_BU01
+    sensor = Omron2JCIE_BU01.serial("/dev/ttyUSB0") # Linux
+    sensor = Omron2JCIE_BU01.serial("COM5")         # Windows
     devinfo = sensor.info()
     data = sensor.latest_data_long()
 
     # Obtain sensing data via BLE communication
     # Read latest data with connection
-    from omron_2jcie_bu01.ble import Omron2JCIE_BU01_BLE
-    sensor = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
+    from omron_2jcie_bu01 import Omron2JCIE_BU01
+    sensor = Omron2JCIE_BU01.ble("AA:BB:CC:DD:EE:FF")
     data1 = sensor.latest_sensing_data()
     data2 = sensor.latest_calculation_data()
 
@@ -51,11 +51,21 @@ __author__  = "Nobuo Okazaki"
 __version__ = "0.1.0"
 __license__ = "MIT License"
 
-class Omron2JCIE_BU01_Base(object):
+class Omron2JCIE_BU01(object):
     # Base class for Serial/BLE implementation
 
     # Description for Vibration Information
     VI = ["NONE", "During vibration (Earthquake judgment in progress)", "During earthquake"]
+
+    @classmethod
+    def serial(cls, portname):
+        from .serial import Omron2JCIE_BU01_Serial
+        return Omron2JCIE_BU01_Serial(portname)
+
+    @classmethod
+    def ble(cls, device_address=None):
+        from .ble import Omron2JCIE_BU01_BLE
+        return Omron2JCIE_BU01_BLE(device_address)
 
     def get(self, address, data=b"", name=None):
         # Write command, get the response data and parse it

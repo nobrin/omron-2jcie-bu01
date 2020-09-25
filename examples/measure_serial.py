@@ -5,7 +5,7 @@ sys.path.insert(0, "..")
 
 import time
 from datetime import datetime, timedelta, tzinfo
-from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
+from omron_2jcie_bu01 import Omron2JCIE_BU01
 
 CurrentTZ = type(time.tzname[0], (tzinfo,), {
     "tzname": lambda self, dt: time.tzname[0],
@@ -13,8 +13,8 @@ CurrentTZ = type(time.tzname[0], (tzinfo,), {
     "dst": lambda self, dt: timedelta(seconds=time.timezone - time.altzone),
 })()
 
-#s = Omron2JCIE_BU01_Serial("/dev/ttyUSB0")
-s = Omron2JCIE_BU01_Serial("COM3")
+#s = Omron2JCIE_BU01.serial("/dev/ttyUSB0")
+s = Omron2JCIE_BU01.serial("COM3")
 dev = s.info()
 info = s.latest_data_long()
 dt = datetime.now(CurrentTZ)

@@ -5,7 +5,7 @@ sys.path.insert(0, "..")
 
 import time
 from datetime import datetime, timedelta, tzinfo
-from omron_2jcie_bu01.ble import Omron2JCIE_BU01_BLE
+from omron_2jcie_bu01 import Omron2JCIE_BU01
 
 CurrentTZ = type(time.tzname[0], (tzinfo,), {
     "tzname": lambda self, dt: time.tzname[0],
@@ -13,8 +13,8 @@ CurrentTZ = type(time.tzname[0], (tzinfo,), {
     "dst": lambda self, dt: timedelta(seconds=time.timezone - time.altzone),
 })()
 
-#s = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
-s = Omron2JCIE_BU01_BLE()
+#s = Omron2JCIE_BU01.ble("AA:BB:CC:DD:EE:FF")
+s = Omron2JCIE_BU01.ble()
 data1 = s.latest_sensing_data()
 data2 = s.latest_calculation_data()
 dt = datetime.now(CurrentTZ)

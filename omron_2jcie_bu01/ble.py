@@ -5,14 +5,14 @@ import struct
 import traceback, platform
 from warnings import warn
 from bleak import BleakClient, BleakScanner, discover
-from . import Omron2JCIE_BU01_Base, DataParser
+from . import Omron2JCIE_BU01, DataParser
 
 # Exceptions for skipping packets
 class SkipData(Exception): pass
 class NotTarget(SkipData): pass
 class NoManufacturerData(SkipData): pass
 
-class Omron2JCIE_BU01_BLE(Omron2JCIE_BU01_Base):
+class Omron2JCIE_BU01_BLE(Omron2JCIE_BU01):
     # Operate OMRON 2JCIE-BU01 via BLE
     BASEUUID = "ab70{addr:04x}-0a3a-11e8-ba89-0ed5f89f718b"
 

@@ -7,9 +7,9 @@ Python 3.6以上で動作します。クラスはUSBシリアル通信およびB
 ### シリアル通信で測定値を取得する
 
 ```python
-from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
-sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
-sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
+from omron_2jcie_bu01 import Omron2JCIE_BU01
+sensor = Omron2JCIE_BU01.serial("/dev/ttyUSB0") # Linux
+sensor = Omron2JCIE_BU01.serial("COM5")         # Windows
 devinfo = sensor.info()
 data = sensor.latest_data_long()
 ```
@@ -18,8 +18,8 @@ data = sensor.latest_data_long()
 
 ```python
 # Read latest data with connection
-from omron_2jcie_bu01.serial import Omron2JCIE_BU01_BLE
-sensor = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
+from omron_2jcie_bu01 import Omron2JCIE_BU01
+sensor = Omron2JCIE_BU01.ble("AA:BB:CC:DD:EE:FF")
 data1 = sensor.latest_sensing_data()
 data2 = sensor.latest_calculation_data()
 ```
@@ -118,8 +118,13 @@ Windows10で動作確認しました。
 応答の種類のフィールド定義を保持しています。
 フィールドを定義することで他の機能の応答にも対応可能です。
 
-### _class_ omron_2jcie_bu01.Omron2JCIE_BU01_Base()
+### _class_ omron_2jcie_bu01.Omron2JCIE_BU01()
 ベースクラス。
+
+- serial(_port_)
+  - Omron2JCIE_BU01_Serialインスタンスを返します。
+- ble(_hardware_address=None_)
+  - Omron2JCIE_BU01_BLEインスタンスを返します。
 
 ### _class_ omron_2jcie_bu01.serial.Omron2JCIE_BU01_Serial(_port_)
 シリアル通信用クラス。
@@ -130,7 +135,7 @@ BLE通信用クラス。
 アドレスは省略可能。省略した場合はdiscoverして、最初に見つかったRbtデバイスをアドレスとして設定します。
 省略した場合はdiscoverに時間がかかるので、アドレス指定を推奨します。
 
-### Omron2JCIE_BU01_Baseオブジェクト
+### Omron2JCIE_BU01オブジェクト
 ベースクラスのため直接インスタンス化せず、継承して使用して下さい。
 
 - get(_address_, _data=b""_, _name=None_)

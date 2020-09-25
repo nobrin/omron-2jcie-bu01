@@ -4,7 +4,7 @@ sys.path.insert(0, "../lib-ext")
 sys.path.insert(0, "..")
 
 import unittest
-from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
+from omron_2jcie_bu01 import Omron2JCIE_BU01
 
 class BLEConnectionTestCase(unittest.TestCase):
     def setUp(self): pass
@@ -19,7 +19,7 @@ class BLEConnectionTestCase(unittest.TestCase):
         0x5111: "led_setting",
         0x5115: "advertise_setting",
         """
-        sensor = Omron2JCIE_BU01_Serial("COM3")
+        sensor = Omron2JCIE_BU01.serial("COM3")
 
         tpl = sensor.latest_data_long()
         print(tpl)

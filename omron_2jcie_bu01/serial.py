@@ -3,9 +3,9 @@
 import struct
 from collections import namedtuple
 from serial import Serial
-from . import Omron2JCIE_BU01_Base, DataParser
+from . import Omron2JCIE_BU01, DataParser
 
-class Omron2JCIE_BU01_Serial(Omron2JCIE_BU01_Base):
+class Omron2JCIE_BU01_Serial(Omron2JCIE_BU01):
     # Operate OMRON 2JCIE-BU01 via serial
     BAUDRATE = 115200
     MAGIC = b"\x52\x42" # Magic Number: b"RB"
