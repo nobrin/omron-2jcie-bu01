@@ -4,7 +4,7 @@ sys.path.insert(0, "../lib-ext")
 sys.path.insert(0, "..")
 
 import unittest
-from envsensor.ble import Omron2JCIE_BU01_BLE
+from omron_2jcie_bu01.ble import Omron2JCIE_BU01_BLE
 
 class BLEScanTestCase(unittest.TestCase):
     ADDRESS = None

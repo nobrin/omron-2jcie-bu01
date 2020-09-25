@@ -1,5 +1,5 @@
 # Project: OMRON 2JCIE-BU01
-# Module:  envsensor.serial
+# Module:  omron_2jcie_bu01.serial
 import struct
 from collections import namedtuple
 from serial import Serial

@@ -5,7 +5,7 @@ sys.path.insert(0, "..")
 
 import time
 from datetime import datetime, timedelta, tzinfo
-from envsensor.ble import Omron2JCIE_BU01_BLE
+from omron_2jcie_bu01.ble import Omron2JCIE_BU01_BLE
 
 CurrentTZ = type(time.tzname[0], (tzinfo,), {
     "tzname": lambda self, dt: time.tzname[0],

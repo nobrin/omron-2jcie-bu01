@@ -1,8 +1,55 @@
 # Project: OMRON 2JCIE-BU01
-# Module:  envsensor.__init__
+# Module:  omron_2jcie_bu01.__init__
+"""
+Module and sample code for obtaining data with OMRON 2JCIE-BU01 Environment
+Sensor by Python. The codes work with Python 3.6 and above. This module supports
+USB serial communication and BLE. This module depends on pySerial(serial
+communication) and Bleak(BLE).
+
+Example::
+
+    # Obtain sensing data via serial communication
+    from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
+    sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
+    sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
+    devinfo = sensor.info()
+    data = sensor.latest_data_long()
+
+    # Obtain sensing data via BLE communication
+    # Read latest data with connection
+    from omron_2jcie_bu01.ble import Omron2JCIE_BU01_BLE
+    sensor = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
+    data1 = sensor.latest_sensing_data()
+    data2 = sensor.latest_calculation_data()
+
+    # Read latest data by scan
+    def on_scan(data):
+        print("SCAN", data)
+
+    # Advertising mode: 0x01 (Passive)
+    sensor.scan(on_scan, scantime=3)
+
+    # Advertising mode: 0x03 (Active)
+    sensor.scan(on_scan, scantime=3, active=True)
+
+    # Notify sensing data
+    def on_notify(sender, tpl):
+        print(f"{sender} {tpl}")
+
+    sensor.start_notify(0x5012, on_notify)
+    sensor.start_notify(0x5013, on_notify)
+    sensor.sleep(5)
+    sensor.stop_notify(0x5012)
+    sensor.stop_notify(0x5013)
+"""
+
 import struct
 from collections import namedtuple
 from decimal import Decimal
+
+__author__  = "Nobuo Okazaki"
+__version__ = "0.1.0"
+__license__ = "MIT License"
 
 class Omron2JCIE_BU01_Base(object):
     # Base class for Serial/BLE implementation

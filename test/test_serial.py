@@ -4,7 +4,7 @@ sys.path.insert(0, "../lib-ext")
 sys.path.insert(0, "..")
 
 import unittest
-from envsensor.serial import Omron2JCIE_BU01_Serial
+from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
 
 class BLEConnectionTestCase(unittest.TestCase):
     def setUp(self): pass

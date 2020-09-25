@@ -1,5 +1,5 @@
 # Project: OMRON 2JCIE-BU01
-# Module:  envsensor.ble
+# Module:  omron_2jcie_bu01.ble
 import asyncio
 import struct
 import traceback, platform

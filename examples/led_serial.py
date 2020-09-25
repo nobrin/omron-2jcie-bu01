@@ -3,9 +3,10 @@ import sys
 sys.path.insert(0, "../lib-ext")
 sys.path.insert(0, "..")
 
-from envsensor.serial import Omron2JCIE_BU01_Serial
+from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
 
 s = Omron2JCIE_BU01_Serial("COM3")
+#s = Omron2JCIE_BU01_Serial("/dev/ttyUSB0")
 
 # Show current setting
 print(s.led())

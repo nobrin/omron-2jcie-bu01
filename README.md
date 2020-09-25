@@ -11,7 +11,7 @@ This module depends on pySerial(serial communication) and Bleak(BLE).
 ### Obtain sensing data _via_ serial communication
 
 ```python
-from envsensor.serial import Omron2JCIE_BU01_Serial
+from omron_2jcie_bu01.serial import Omron2JCIE_BU01_Serial
 sensor = Omron2JCIE_BU01_Serial("/dev/ttyUSB0") # Linux
 sensor = Omron2JCIE_BU01_Serial("COM5")         # Windows
 devinfo = sensor.info()
@@ -22,7 +22,7 @@ data = sensor.latest_data_long()
 
 ```python
 # Read latest data with connection
-from envsensor.serial import Omron2JCIE_BU01_BLE
+from omron_2jcie_bu01.serial import Omron2JCIE_BU01_BLE
 sensor = Omron2JCIE_BU01_BLE("AA:BB:CC:DD:EE:FF")
 data1 = sensor.latest_sensing_data()
 data2 = sensor.latest_calculation_data()
@@ -53,7 +53,7 @@ sensor.stop_notify(0x5013)
 ```
 
 ## Files
-- envsensor/ -- This module
+- omron_2jcie_bu01/ -- This module
   - __init__.py -- Common class for serial and BLE
   - ble.py -- Omron2JCIE_BU01_BLE class for BLE
   - serial.py -- Omron2JCIE_BU01_Serial class for serial
@@ -73,15 +73,15 @@ sensor.stop_notify(0x5013)
     pip3 install bleak
 
 ## Module
-### _class_ envsensor.DataParser()
+### _class_ omron_2jcie_bu01.DataParser()
 
-### _class_ envseosor.Omron2JCIE_BU01_Base()
+### _class_ omron_2jcie_bu01.Omron2JCIE_BU01_Base()
 
-### _class_ envsensor.serial.Omron2JCIE_BU01_Serial(_port_)
+### _class_ omron_2jcie_bu01.serial.Omron2JCIE_BU01_Serial(_port_)
 Class for serial communication.
 Parameter _port_ is for example, /dev/ttyUSB0 (Linux), COM5 (Windows).
 
-### _class_ envsensor.ble.Omron2JCIE_BU01_BLE(_hardware_address=None_)
+### _class_ omron_2jcie_bu01.ble.Omron2JCIE_BU01_BLE(_hardware_address=None_)
 Class for BLE communication.
 Hardware address is optional. If ommited, the address will be specified by discover().
 The discover() takes time, specifying address are recommended.
